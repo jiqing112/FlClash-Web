@@ -1,0 +1,17 @@
+# dependencies / build outputs
+node_modules/
+frontend/dist/
+backend/internal/api/dist/
+
+# binaries & local data
+dist/
+backend/*.exe
+backend/server.log
+*.db
+
+# reference material (cloned upstream repos, real app, screenshots)
+reference/
+
+# editor
+.vscode/
+.idea/
