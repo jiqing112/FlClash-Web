@@ -1,5 +1,7 @@
 # FlClash-Web
 
+![FlClash-Web 仪表盘](docs/screenshot.png)
+
 以 [FlClash](https://github.com/chen08209/FlClash) v0.9.3 为参照,用 **Go + SQLite + Svelte** 复刻的 Web 版客户端。
 单个二进制,监听一个 HTTP 端口,内置完整 mihomo(Clash.Meta)核心,在 Windows / Linux / macOS 上行为一致。
 
