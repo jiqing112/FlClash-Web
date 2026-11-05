@@ -59,6 +59,7 @@ func main() {
 	}
 	application.StartTrafficPoller()
 	application.StartAutoUpdater()
+	hub.StartMemoryTuner()
 
 	// apply the selected profile in the background so the UI has proxies
 	// right after boot, and auto-run the listener when configured.
