@@ -119,13 +119,15 @@ type GeoUpdateStatus struct {
 	Error    string `json:"error,omitempty"`
 }
 
-// MemoryStats mirrors the core's core.memory result.
+// MemoryStats mirrors the core's core.memory result, plus the host process
+// resident size so the UI can split 应用/内核 the way the desktop does.
 type MemoryStats struct {
 	RSS          uint64 `json:"rss"`
 	HeapInuse    uint64 `json:"heap-inuse"`
 	HeapIdle     uint64 `json:"heap-idle"`
 	StackInuse   uint64 `json:"stack-inuse"`
 	RuntimeOther uint64 `json:"runtime-other"`
+	App          uint64 `json:"app,omitempty"`
 }
 
 const (

@@ -169,8 +169,24 @@ export function successColor(dark: boolean): string {
   return paletteTone(SUCCESS_PALETTE, dark ? 80 : 40);
 }
 
+export function successContainerColor(dark: boolean): string {
+  return paletteTone(SUCCESS_PALETTE, dark ? 30 : 90);
+}
+
+export function onSuccessContainerColor(dark: boolean): string {
+  return paletteTone(SUCCESS_PALETTE, dark ? 90 : 30);
+}
+
 export function warningColor(dark: boolean): string {
   return paletteTone(WARNING_PALETTE, dark ? 80 : 40);
+}
+
+export function warningContainerColor(dark: boolean): string {
+  return paletteTone(WARNING_PALETTE, dark ? 30 : 90);
+}
+
+export function onWarningContainerColor(dark: boolean): string {
+  return paletteTone(WARNING_PALETTE, dark ? 90 : 30);
 }
 
 // delayColor: the app's green→red scale for latency values.

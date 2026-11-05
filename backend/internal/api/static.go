@@ -22,10 +22,14 @@ func StaticHandler() http.Handler {
 	fileServer := http.FileServer(http.FS(sub))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/")
-		if path == "" {
-			path = "index.html"
+		_, statErr := fs.Stat(sub, path)
+		if path == "" || statErr != nil || strings.HasSuffix(path, ".html") {
+			// The HTML shell references hashed assets; serve it fresh so a
+			// new build is picked up on reload. Assets are hashed, so they
+			// can cache heuristically.
+			w.Header().Set("Cache-Control", "no-cache, must-revalidate")
 		}
-		if _, err := fs.Stat(sub, path); err != nil {
+		if statErr != nil {
 			// SPA fallback
 			r2 := new(http.Request)
 			*r2 = *r

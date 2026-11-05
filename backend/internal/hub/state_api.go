@@ -111,7 +111,9 @@ func (h *Hub) StartTrafficPoller() {
 	}()
 }
 
-// Memory returns the core's memory stats.
+// Memory returns the core's runtime stats with the host process resident
+// size, matching MemorySnapshot.resolve's in-process case: rss is the app
+// process, and the core's share is its runtime accounting.
 func (h *Hub) Memory() (MemoryStats, error) {
 	var stats MemoryStats
 	if h.client == nil {
@@ -122,6 +124,7 @@ func (h *Hub) Memory() (MemoryStats, error) {
 		return stats, err
 	}
 	json.Unmarshal(raw, &stats)
+	stats.RSS = processResidentBytes()
 	return stats, nil
 }
 

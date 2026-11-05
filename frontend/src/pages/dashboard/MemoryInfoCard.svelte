@@ -11,7 +11,7 @@
   const chipGlyph = '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/>';
   const chevronGlyph = '<path d="M9 6l6 6-6 6"/>';
 
-  let stats = $state<{ rss: number; heapInuse: number; heapIdle: number; stackInuse: number; runtimeOther: number } | null>(null);
+  let stats = $state<{ rss: number; 'heap-inuse': number; 'heap-idle': number; 'stack-inuse': number; 'runtime-other': number } | null>(null);
 
   $effect(() => {
     let alive = true;
@@ -31,9 +31,14 @@
     };
   });
 
-  const core = $derived(stats ? stats.rss : 0);
-  const app = $derived(stats ? Math.max(0, stats.heapInuse + stats.stackInuse + stats.runtimeOther - 0) : 0);
-  const total = $derived(Math.max(1, core + app));
+  // MemorySnapshot.resolve 的 core-in-process 分支:
+  // 内核 = runtime 合计(含 heap-idle),应用 = 进程常驻 − 内核
+  const core = $derived.by(() => {
+    if (!stats) return 0;
+    return (stats['heap-inuse'] ?? 0) + (stats['heap-idle'] ?? 0) + (stats['stack-inuse'] ?? 0) + (stats['runtime-other'] ?? 0);
+  });
+  const app = $derived(stats ? Math.max(0, stats.rss - core) : 0);
+  const total = $derived(Math.max(1, app + core));
   const coreShare = $derived(core / total);
 </script>
 
@@ -41,8 +46,8 @@
   <DashHeader glyph={chipGlyph} title={t('memoryInfo')} chevron={!mobile} />
   <div class="spacer"></div>
   <div class="figure-row">
-    <span class="figure tabular">{trafficText(core).split(' ')[0]}</span>
-    <span class="unit">{trafficText(core).split(' ')[1] ?? 'MB'}</span>
+    <span class="figure tabular">{trafficText(app + core).split(' ')[0]}</span>
+    <span class="unit">{trafficText(app + core).split(' ')[1] ?? 'MB'}</span>
   </div>
   <div class="bar">
     <div class="seg" style="flex: {coreShare * 1000}; background: var(--primary)"></div>

@@ -4,7 +4,7 @@
   import { t } from '../../lib/i18n';
   import { currentProfile, groups, showBanner } from '../../lib/stores';
   import { api } from '../../lib/api';
-  import { trafficText, dateText } from '../../lib/format';
+  import { trafficText, relativeTimeText } from '../../lib/format';
   import DashCard from '../../components/dash/DashCard.svelte';
   import DashHeader from '../../components/dash/DashHeader.svelte';
   import WavyProgress from '../../components/dash/WavyProgress.svelte';
@@ -49,7 +49,7 @@
 </script>
 
 <DashCard>
-  <DashHeader glyph={profilesGlyph} title={t('profile')} chevron={!mobile}>
+  <DashHeader glyph={profilesGlyph} title={t('profile')}>
     {#snippet trailing()}
       {#if profile?.type === 'url'}
         <button class="card-icon" onclick={sync} title={t('update')}>
@@ -67,7 +67,7 @@
     <div class="meta-row">
       <span class="meta ellipsis">
         {#if profile.lastUpdateDate}
-          {t('profileUpdatedAt', { time: dateText(profile.lastUpdateDate) })}
+          {t('profileUpdatedAt', { time: relativeTimeText(profile.lastUpdateDate, t) })}
         {/if}
       </span>
       <span class="meta ellipsis" class:soon={expiryDays != null && expiryDays <= 7}>

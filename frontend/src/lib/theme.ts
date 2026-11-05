@@ -1,7 +1,16 @@
 // Theme: computes the color scheme from themeProps and writes CSS variables.
 import { derived } from 'svelte/store';
 import { config } from './stores';
-import { seededColorScheme, toPureBlack, successColor, warningColor } from './color';
+import {
+  seededColorScheme,
+  toPureBlack,
+  successColor,
+  successContainerColor,
+  onSuccessContainerColor,
+  warningColor,
+  warningContainerColor,
+  onWarningContainerColor,
+} from './color';
 import type { SchemeColors } from './color';
 
 export const systemDark =
@@ -17,14 +26,27 @@ export const isDark = derived(config, ($c) => {
   return systemDark?.matches ?? false;
 });
 
-function varsOf(colors: SchemeColors, success: string, warning: string, textScale: number): Record<string, string> {
+function varsOf(
+  colors: SchemeColors,
+  success: string,
+  successContainer: string,
+  onSuccessContainer: string,
+  warning: string,
+  warningContainer: string,
+  onWarningContainer: string,
+  textScale: number,
+): Record<string, string> {
   const vars: Record<string, string> = {};
   for (const [role, value] of Object.entries(colors)) {
     if (role === 'brightness') continue;
     vars[`--${camelToKebab(role)}`] = value;
   }
   vars['--success'] = success;
+  vars['--success-container'] = successContainer;
+  vars['--on-success-container'] = onSuccessContainer;
   vars['--warning'] = warning;
+  vars['--warning-container'] = warningContainer;
+  vars['--on-warning-container'] = onWarningContainer;
   vars['--text-scale'] = String(textScale);
   vars['--font-scale'] = String(textScale);
   return vars;
@@ -42,7 +64,16 @@ export const themeVars = derived([config, isDark], ([$c, $dark]) => {
   let colors = seededColorScheme(seed, $dark, style);
   if (theme?.pureBlack) colors = toPureBlack(colors);
   const scale = theme?.textScale?.enable ? theme.textScale.scale : 1;
-  return varsOf(colors, successColor($dark), warningColor($dark), scale);
+  return varsOf(
+    colors,
+    successColor($dark),
+    successContainerColor($dark),
+    onSuccessContainerColor($dark),
+    warningColor($dark),
+    warningContainerColor($dark),
+    onWarningContainerColor($dark),
+    scale,
+  );
 });
 
 // applyTheme writes the variables onto the root element.

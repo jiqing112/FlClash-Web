@@ -116,43 +116,29 @@
           {/each}
         </div>
       {:else if columns === 4}
+        <!-- the desktop grid is fixed (dashboard.dart); dashboardWidgets only
+             shapes the mobile column -->
         <div class="grid" style="gap: {gap}px">
-          {#if has('currentOutbound')}
-            <div class="row" style="height: {topHeight}px; gap: {gap}px">
-              <div class="cell span2"><CurrentOutboundCard /></div>
-              <div class="cell"><SpeedCard direction="upload" /></div>
-              <div class="cell"><SpeedCard direction="download" /></div>
-            </div>
-          {/if}
-          {#if has('outboundMode') || has('networkTakeover')}
-            <div class="row" style="height: {controlHeight}px; gap: {gap}px">
-              {#if has('outboundMode')}
-                <div class="cell span2"><OutboundModeBar /></div>
-              {/if}
-              {#if has('networkTakeover')}
-                <div class="cell"><NetworkTakeoverTile kind="systemProxy" /></div>
-                <div class="cell"><NetworkTakeoverTile kind="tun" /></div>
-              {/if}
-            </div>
-          {/if}
-          {#if has('intranetIp') || has('profiles') || has('serviceStatus') || has('memoryInfo')}
-            <div class="row" style="height: {middleHeight}px; gap: {gap}px">
-              {#if has('intranetIp')}<div class="cell"><IntranetIpCard /></div>{/if}
-              {#if has('profiles')}<div class="cell"><ProfilesCard /></div>{/if}
-              {#if has('serviceStatus')}<div class="cell"><ServiceStatusCard /></div>{/if}
-              {#if has('memoryInfo')}<div class="cell"><MemoryInfoCard /></div>{/if}
-            </div>
-          {/if}
-          {#if has('connectionStats') || has('proxyGroups')}
-            <div class="tables" style="gap: {gap}px; min-height: {tablesMinHeight}px">
-              {#if has('connectionStats')}
-                <div class="cell" style="flex: 3"><ConnectionsTableCard /></div>
-              {/if}
-              {#if has('proxyGroups')}
-                <div class="cell" style="flex: 2"><ProxyGroupsCard /></div>
-              {/if}
-            </div>
-          {/if}
+          <div class="row" style="height: {topHeight}px; gap: {gap}px">
+            <div class="cell span2"><CurrentOutboundCard /></div>
+            <div class="cell"><SpeedCard direction="upload" /></div>
+            <div class="cell"><SpeedCard direction="download" /></div>
+          </div>
+          <div class="row" style="height: {controlHeight}px; gap: {gap}px">
+            <div class="cell span2"><OutboundModeBar /></div>
+            <div class="cell"><NetworkTakeoverTile kind="systemProxy" /></div>
+            <div class="cell"><NetworkTakeoverTile kind="tun" /></div>
+          </div>
+          <div class="row" style="height: {middleHeight}px; gap: {gap}px">
+            <div class="cell"><IntranetIpCard /></div>
+            <div class="cell"><ProfilesCard /></div>
+            <div class="cell"><ServiceStatusCard /></div>
+            <div class="cell"><MemoryInfoCard /></div>
+          </div>
+          <div class="tables" style="gap: {gap}px; min-height: {tablesMinHeight}px">
+            <div class="cell" style="flex: 3"><ConnectionsTableCard /></div>
+            <div class="cell" style="flex: 2"><ProxyGroupsCard /></div>
+          </div>
         </div>
       {:else}
         <div class="two-col" style="gap: {gap}px">

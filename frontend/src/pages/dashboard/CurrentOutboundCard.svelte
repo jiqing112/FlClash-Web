@@ -4,7 +4,7 @@
   import { t } from '../../lib/i18n';
   import { api } from '../../lib/api';
   import { running, setRunningState, showBanner, tunnelMode } from '../../lib/stores';
-  import { durationText } from '../../lib/format';
+  import { runTimeText } from '../../lib/format';
   import { materialShapes } from '../../lib/shapes';
   import DashCard from '../../components/dash/DashCard.svelte';
   import DashHeader from '../../components/dash/DashHeader.svelte';
@@ -85,7 +85,15 @@
   }
 
   $effect(() => {
-    probe();
+    let retries = 0;
+    const run = async () => {
+      await probe();
+      if (!ipInfo && retries < 4) {
+        retries++;
+        setTimeout(run, 3000);
+      }
+    };
+    run();
     const timer = setInterval(probe, 60_000);
     return () => clearInterval(timer);
   });
@@ -189,7 +197,7 @@
         <div class="cells">
           <div class="cell-item">
             <div class="cell-label">{t('runTime')}</div>
-            <div class="cell-value tabular">{runTimeValue > 0 ? durationText(runTimeValue) : '—'}</div>
+            <div class="cell-value tabular">{runTimeValue > 0 ? runTimeText(runTimeValue) : '—'}</div>
           </div>
           <div class="cell-item">
             <div class="cell-label">{t('ipOrganization')}</div>

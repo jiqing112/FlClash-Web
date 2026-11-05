@@ -49,7 +49,7 @@
 </script>
 
 <Scaffold
-  title={t('requests')}
+  title={t('liveConnections')}
   bind:searchText={search}
   search
   searchPlaceholder={t('search')}
