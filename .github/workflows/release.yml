@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows, arch: amd64, ext: .exe }
+          - { os: linux, arch: amd64, ext: '' }
+          - { os: linux, arch: arm64, ext: '' }
+          - { os: darwin, arch: amd64, ext: '' }
+          - { os: darwin, arch: arm64, ext: '' }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27'
+          cache-dependency-path: backend/go.sum
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Embed frontend into the Go server
+        run: |
+          rm -rf backend/internal/api/dist
+          cp -r frontend/dist backend/internal/api/dist
+
+      - name: Build binary
+        working-directory: backend
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: '0'
+          GOTOOLCHAIN: local
+        run: go build -trimpath -ldflags "-s -w" -o "../dist/flclash-web-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.ext }}" .
+
+      - name: Smoke test (native build only)
+        if: matrix.os == 'linux' && matrix.arch == 'amd64'
+        working-directory: backend
+        run: |
+          ../dist/flclash-web-linux-amd64 -addr 127.0.0.1:18787 &
+          sleep 5
+          curl -fsS http://127.0.0.1:18787/ -o /dev/null
+          curl -fsS http://127.0.0.1:18787/api/bootstrap -o /dev/null
+          kill %1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flclash-web-${{ matrix.os }}-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: dist
+
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum * > SHA256SUMS
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*
+          generate_release_notes: true
