@@ -545,14 +545,13 @@ a {
 }
 
 /* ---- menu / popup ---- */
+/* Global so snippet-built menus share the component menu's prism look:
+   card radius 24 + inset 8 live in PopupMenu.svelte; rows here. */
 
 .popup-surface {
   background: var(--surface-bright);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-e2);
-  border: 1px solid color-mix(in srgb, var(--on-surface) 8%, transparent);
-  overflow: hidden;
-  min-width: 180px;
 }
 
 :root.dark .popup-surface {
@@ -562,25 +561,69 @@ a {
 .popup-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 10px 16px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border-radius: 16px;
   text-align: left;
-  font-size: 0.92rem;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--on-surface);
   transition: background 0.12s ease;
   white-space: nowrap;
 }
 
 .popup-item:hover {
-  background: color-mix(in srgb, var(--on-surface) 7%, transparent);
+  background: color-mix(in srgb, var(--on-surface) 8%, transparent);
 }
 
-.popup-item.selected {
-  color: var(--primary);
+.popup-item:active {
+  background: color-mix(in srgb, var(--on-surface) 16%, transparent);
 }
 
 .popup-item.danger {
   color: var(--error);
+}
+
+.popup-item.danger:hover {
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+}
+
+.popup-item .item-icon {
+  display: inline-flex;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.popup-item .item-titles {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.popup-item .item-subtitle {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--on-surface-variant);
+  white-space: normal;
+}
+
+.popup-item .check {
+  flex-shrink: 0;
+}
+
+.popup-item.with-check {
+  padding-right: 8px;
+}
+
+.menu-section {
+  padding: 8px 12px 2px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--on-surface-variant);
 }
 
 /* ---- dialog / sheet scrim ---- */

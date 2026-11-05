@@ -137,24 +137,33 @@
       {#snippet menu()}
         <div class="menu-section">{t('style')}</div>
         {#each [{ value: 'tab', label: t('tab') }, { value: 'list', label: t('list') }] as option}
-          <button class="popup-item" class:selected={style.type === option.value} onclick={() => setStyle({ type: option.value as any })}>
-            {option.label}
+          <button class="popup-item" class:with-check={style.type === option.value} onclick={() => setStyle({ type: option.value as any })}>
+            <span class="item-titles"><span class="item-label">{option.label}</span></span>
+            {#if style.type === option.value}
+              <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+            {/if}
           </button>
         {/each}
         <div class="menu-section">{t('sort')}</div>
         {#each [{ value: 'none', label: t('defaultText') }, { value: 'delay', label: t('delay') }, { value: 'name', label: t('name') }] as option}
-          <button class="popup-item" class:selected={style.sortType === option.value} onclick={() => setStyle({ sortType: option.value as any })}>
-            {option.label}
+          <button class="popup-item" class:with-check={style.sortType === option.value} onclick={() => setStyle({ sortType: option.value as any })}>
+            <span class="item-titles"><span class="item-label">{option.label}</span></span>
+            {#if style.sortType === option.value}
+              <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+            {/if}
           </button>
         {/each}
         <div class="menu-section">{t('size')}</div>
         {#each [{ value: 'compact', label: t('compact') }, { value: 'standard', label: t('standard') }, { value: 'loose', label: t('loose') }] as option}
-          <button class="popup-item" class:selected={style.cardType === option.value} onclick={() => setStyle({ cardType: option.value as any })}>
-            {option.label}
+          <button class="popup-item" class:with-check={style.cardType === option.value} onclick={() => setStyle({ cardType: option.value as any })}>
+            <span class="item-titles"><span class="item-label">{option.label}</span></span>
+            {#if style.cardType === option.value}
+              <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+            {/if}
           </button>
         {/each}
-        <button class="popup-item" class:selected={style.hideTimeoutProxies} onclick={() => setStyle({ hideTimeoutProxies: !style.hideTimeoutProxies })}>
-          {t('hideTimeoutProxies')}
+        <button class="popup-item" class:with-check={style.hideTimeoutProxies} onclick={() => setStyle({ hideTimeoutProxies: !style.hideTimeoutProxies })}>
+          <span class="item-titles"><span class="item-label">{t('hideTimeoutProxies')}</span></span>
           {#if style.hideTimeoutProxies}
             <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
           {/if}

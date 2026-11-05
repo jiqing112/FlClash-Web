@@ -1,11 +1,14 @@
 <script lang="ts">
-  // Anchored popup menu. The children snippet is the trigger: clicking it
-  // toggles the menu unless it carries its own click handler. Closes on an
-  // outside click or Escape.
+  // Anchored popup menu, restyled to prism_ui/lib/popup.dart: card radius 24
+  // (item 16 + inset 8), content inset 8, rows 44px with 16px-radius hover
+  // pills, width 160-280, sections as 13px titles, check at the row end.
+  // The children snippet is the trigger: clicking it toggles the menu unless
+  // it carries its own click handler. Closes on an outside click or Escape.
   import type { Snippet } from 'svelte';
 
   type MenuItem = {
     label?: string;
+    subtitle?: string;
     icon?: string;
     onClick?: () => void;
     selected?: boolean;
@@ -31,13 +34,9 @@
 
   let anchor = $state<HTMLDivElement | null>(null);
   let menu = $state<HTMLDivElement | null>(null);
-  let trigger = $state<HTMLDivElement | null>(null);
 
   const shown = $derived(items.filter((item) => item.show !== false));
 
-  // The trigger wrapper handles the toggle; a click handler on the trigger's
-  // own button would also bubble here, so stopping it in onToggleClick is not
-  // needed — the document-level closer ignores clicks inside the anchor.
   function onToggleClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (target.closest('[data-menu-no-toggle]')) return;
@@ -78,23 +77,35 @@
 </script>
 
 <div class="anchor" bind:this={anchor}>
-  <div class="trigger" bind:this={trigger} onclick={onToggleClick} role="presentation">
+  <div class="trigger" onclick={onToggleClick} role="presentation">
     {@render children?.()}
   </div>
   {#if open}
-    <div class="popup-surface menu rise-in" bind:this={menu} style="{align}: 0">
+    <div class="menu rise-in" bind:this={menu} style="{align}: 0">
       {#if menuSnippet}
         {@render menuSnippet()}
       {:else}
         {#each shown as item}
           {#if item.section}
-            <div class="section">{@render item.section()}</div>
+            <div class="menu-section">{@render item.section()}</div>
           {:else}
-            <button class="popup-item" class:selected={item.selected} class:danger={item.danger} onclick={() => run(item)}>
+            <button
+              class="popup-item"
+              class:danger={item.danger}
+              class:with-check={item.selected}
+              onclick={() => run(item)}
+            >
               {#if item.icon}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{@html item.icon}</svg>
+                <span class="item-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{@html item.icon}</svg>
+                </span>
               {/if}
-              <span class="ellipsis">{item.label}</span>
+              <span class="item-titles">
+                <span class="item-label ellipsis">{item.label}</span>
+                {#if item.subtitle}
+                  <span class="item-subtitle ellipsis">{item.subtitle}</span>
+                {/if}
+              </span>
               {#if item.selected}
                 <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
               {/if}
@@ -117,24 +128,34 @@
     cursor: pointer;
   }
 
+  /* The menu card: radius = item 16 + inset 8, content inset 8, width 160-280,
+     height fits 7 rows plus a half-row cut that tells it scrolls. */
   .menu {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     z-index: 80;
-    max-height: 60vh;
+    min-width: 200px;
+    max-width: 280px;
+    padding: 8px;
+    border-radius: 24px;
+    background: var(--surface-bright);
+    box-shadow: var(--shadow-e2);
+    max-height: calc(16px + 7.5 * 44px);
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-width: none;
   }
 
-  .section {
-    padding: 4px 0;
+  :root.dark .menu {
+    background: var(--surface-container-high);
   }
 
-  .section + .section {
-    border-top: 1px solid color-mix(in srgb, var(--on-surface) 8%, transparent);
+  .menu::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
 
-  .check {
-    margin-left: auto;
-  }
+  /* rows and section titles are styled globally in app.css so snippet-built
+     menus share the same look */
+
 </style>
